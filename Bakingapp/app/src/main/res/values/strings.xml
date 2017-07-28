@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Baking Time</string>
+    <string name="left_step">Previous Step</string>
+    <string name="right_step">Next Step</string>
+    <string name="app_ingredients">Ingredients</string>
+
+    <string name="error_internet">No Internet Connection</string>
+    <string name="error_results">Error Loading Results</string>
+    <string name="appwidget_text">widget info</string>
+    <string name="add_widget">Add widget</string>
+    <string name="recipe_desc">Recipe open</string>
+
+</resources>
