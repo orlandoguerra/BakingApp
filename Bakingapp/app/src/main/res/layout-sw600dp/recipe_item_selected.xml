@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tv_shortDescription"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/borderOptionStyle"
-    android:drawableLeft="@drawable/ic_selected"/>
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    style="@style/borderOptionStyle">
+
+   <TextView
+       android:id="@+id/tv_shortDescription"
+       android:layout_width="0dp"
+       android:layout_weight="5"
+       android:layout_height="wrap_content"
+       style="@style/optionStyle"
+       android:drawableLeft="@drawable/ic_selected"
+       android:gravity="left"/>
+
+    <ImageView
+        android:id="@+id/iv_imageDescription"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

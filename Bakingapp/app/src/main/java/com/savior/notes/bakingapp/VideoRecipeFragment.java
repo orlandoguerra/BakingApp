@@ -1,9 +1,9 @@
 package com.savior.notes.bakingapp;
 
+import android.app.Fragment;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
@@ -29,14 +29,17 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Orlando on 7/18/2017.
  */
 
 public class VideoRecipeFragment extends Fragment implements ExoPlayer.EventListener{
 
+    @BindView(R.id.playerView) SimpleExoPlayerView mPlayerView;
     private SimpleExoPlayer mExoPlayer;
-    private SimpleExoPlayerView mPlayerView;
     private static final String TAG = VideoRecipeFragment.class.getName();
     private MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
@@ -45,8 +48,7 @@ public class VideoRecipeFragment extends Fragment implements ExoPlayer.EventList
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
-
-        mPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
+        ButterKnife.bind(this,rootView);
         mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
                 (getResources(), R.drawable.ic_before));
         if(uriString != null && !"".equals(uriString)){
@@ -145,8 +147,9 @@ public class VideoRecipeFragment extends Fragment implements ExoPlayer.EventList
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        super.onStop();
         releasePlayer();
     }
+
 }

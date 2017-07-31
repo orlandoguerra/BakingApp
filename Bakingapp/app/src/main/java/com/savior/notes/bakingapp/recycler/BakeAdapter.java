@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.savior.notes.bakingapp.ListItemClickListener;
 import com.savior.notes.bakingapp.R;
 import com.savior.notes.bakingapp.model.Baking;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class BakeAdapter extends RecyclerView.Adapter<BakeHolder> {
 
     private final ListItemClickListener mOnClickListener;
     private List<Baking> listBak;
+    private Context context;
 
     private static final String TAG = BakeAdapter.class.getSimpleName();
 
@@ -33,7 +35,7 @@ public class BakeAdapter extends RecyclerView.Adapter<BakeHolder> {
         }
     }
     public BakeHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
+        this.context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.bake_item, viewGroup, false);
         BakeHolder holder = new BakeHolder(view,mOnClickListener);
@@ -51,7 +53,15 @@ public class BakeAdapter extends RecyclerView.Adapter<BakeHolder> {
 
         holder.mNameTextView.setText(bak.getName());
         holder.itemView.setTag(bak.getId());
-        holder.mServingsTextView.setText(String.valueOf(bak.getServings()));
+
+        if(bak.getImage() == null || "".equals(bak.getImage())){
+            holder.mImageDescription.setImageResource(R.drawable.ic_servings);
+        }else{
+            Picasso.with(this.context).load(bak.getImage())
+                    .placeholder(R.drawable.ic_servings)
+                    .error(R.drawable.ic_servings)
+                    .into(holder.mImageDescription);
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.savior.notes.bakingapp.ListItemClickListener;
 import com.savior.notes.bakingapp.R;
 import com.savior.notes.bakingapp.model.Step;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeHolder> {
     private final ListItemClickListener mOnClickListener;
     private List<Step> steps;
     private int index;
+    private Context context;
 
     private static final String TAG = RecipeAdapter.class.getSimpleName();
     public RecipeAdapter(ListItemClickListener mOnClickListener, List<Step> steps, int index) {
@@ -28,14 +30,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeHolder> {
         this.steps = steps;
         this.index = index;
     }
-    public void swapCursor(List<Step> newSteps) {
-        steps = newSteps;
+    public void swapCursor(List<Step> newSteps, int newIndex) {
+        this.steps = newSteps;
+        this.index = newIndex;
         if (steps != null) {
             this.notifyDataSetChanged();
         }
     }
     public RecipeHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
+        this.context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(viewType == 1?R.layout.recipe_item_selected:R.layout.recipe_item, viewGroup, false);
         RecipeHolder holder = new RecipeHolder(view,mOnClickListener);
@@ -50,6 +53,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeHolder> {
     public void onBindViewHolder(RecipeHolder holder, int position)  {
         Step step = steps.get(position);
         holder.mShortDescriptionTextView.setText(step.getShortDescription());
+
+        if(step.getThumbnailURL() == null || "".equals(step.getThumbnailURL())){
+            holder.mImageDescription.setImageResource(R.drawable.ic_icon);
+        }else{
+            Picasso.with(this.context).load(step.getThumbnailURL())
+                    .placeholder(R.drawable.ic_icon)
+                    .error(R.drawable.ic_icon)
+                    .into(holder.mImageDescription);
+        }
+
+
         holder.itemView.setTag(step.getId());
     }
 

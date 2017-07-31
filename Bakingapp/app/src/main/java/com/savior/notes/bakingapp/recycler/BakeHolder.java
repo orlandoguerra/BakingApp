@@ -2,6 +2,7 @@ package com.savior.notes.bakingapp.recycler;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.savior.notes.bakingapp.ListItemClickListener;
@@ -15,14 +16,15 @@ public class BakeHolder extends RecyclerView.ViewHolder implements View.OnClickL
 
     private ListItemClickListener mOnClickListener;
     public TextView mNameTextView;
-    public TextView mServingsTextView;
+    public ImageView mImageDescription;
 
 
     public BakeHolder(View itemView, ListItemClickListener mOnClickListener) {
         super(itemView);
         this.mOnClickListener = mOnClickListener;
         mNameTextView = (TextView) itemView.findViewById(R.id.tv_name);
-        mServingsTextView = (TextView) itemView.findViewById(R.id.tv_servings);
+        mImageDescription = (ImageView) itemView.findViewById(R.id.iv_servings);
+
         itemView.setOnClickListener(this);
     }
 

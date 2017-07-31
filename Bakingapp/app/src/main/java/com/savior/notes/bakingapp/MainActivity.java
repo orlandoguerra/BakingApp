@@ -18,6 +18,8 @@ import com.savior.notes.bakingapp.util.NoConnectivityException;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity  implements Callback<List<Ba
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.pb_loading_indicator)ProgressBar mLoadingIndicator;
     private BakeAdapter mAdapter;
     private List<Baking> listBak;
 
@@ -34,8 +36,7 @@ public class MainActivity extends AppCompatActivity  implements Callback<List<Ba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        ButterKnife.bind(this);
         mLoadingIndicator.setVisibility(View.VISIBLE);
         if(findViewById(R.id.rv_recipe_600)==null){
             mRecyclerView = (RecyclerView) findViewById(R.id.rv_recipe);

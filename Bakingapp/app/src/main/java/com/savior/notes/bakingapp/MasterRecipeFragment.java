@@ -1,8 +1,8 @@
 package com.savior.notes.bakingapp;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +15,9 @@ import com.savior.notes.bakingapp.model.Baking;
 import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.recycler.RecipeAdapter;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 /**
  * Created by Orlando on 7/17/2017.
@@ -22,9 +25,11 @@ import com.savior.notes.bakingapp.recycler.RecipeAdapter;
 
 public class MasterRecipeFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
-    private ProgressBar mLoadingIndicator;
-    private RecipeAdapter mAdapter;
+    @BindView(R.id.rv_recipe) RecyclerView mRecyclerView;
+    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+    @BindView(R.id.tv_ingredients) TextView ingredients;
+
+    public RecipeAdapter mAdapter;
     private Baking bak;
     private int stepIndex;
 
@@ -47,8 +52,8 @@ public class MasterRecipeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstance){
         View rootView = inflater.inflate(R.layout.fragment_recipe_master, container, false);
+        ButterKnife.bind(this,rootView);
 
-        TextView ingredients = (TextView)rootView.findViewById(R.id.tv_ingredients);
         ingredients.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -58,9 +63,6 @@ public class MasterRecipeFragment extends Fragment {
             }
         });
 
-
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.rv_recipe);
-        mLoadingIndicator = (ProgressBar) rootView.findViewById(R.id.pb_loading_indicator);
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

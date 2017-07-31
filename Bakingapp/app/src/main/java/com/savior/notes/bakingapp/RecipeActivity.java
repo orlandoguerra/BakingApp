@@ -1,27 +1,24 @@
 package com.savior.notes.bakingapp;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.savior.notes.bakingapp.model.Baking;
 import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.util.NetworkUtil;
 import com.savior.notes.bakingapp.util.NoConnectivityException;
 
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class RecipeActivity extends AppCompatActivity  implements Callback<List<Baking>> {
 
@@ -30,41 +27,57 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
     private static final String TAG = RecipeActivity.class.getSimpleName();
     private FragmentManager fragManager;
     private int receipeId;
-    private int stepIndex;
+    private Integer stepIndex;
     private VideoRecipeFragment fragmentVideo;
     private MasterRecipeFragment fragment;
     private StepFragment fragmentStep;
     private boolean isFirstLoad;
+    private Baking bak;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
 
+        Intent sendIntent = getIntent();
         if (savedInstanceState == null) {
-            Intent sendIntent = getIntent();
+
             receipeId = sendIntent.getIntExtra(Constants.RECIPE_ID,0);
             stepIndex = sendIntent.getIntExtra(Constants.STEP_INDEX,0);
             isFirstLoad = true;
         }else{
             receipeId = savedInstanceState.getInt(SAVED_RECIPE_ID);
             stepIndex = savedInstanceState.getInt(SAVED_STEP_INDEX);
+            //receipeId = sendIntent.getIntExtra(Constants.RECIPE_ID,0);
+            //stepIndex = sendIntent.getIntExtra(Constants.STEP_INDEX,0);
+            //isFirstLoad = true;
         }
 
         Call<List<Baking>> call = NetworkUtil.getBakingCall(this);
         call.enqueue(this);
 
-        fragManager = getSupportFragmentManager();
+        fragManager = getFragmentManager();
+
     }
 
     class ClickActivity implements ListItemClickListener{
         @Override
         public void onListItemClick(int clickedItem) {
-            Intent intent =  new Intent(RecipeActivity.this,RecipeActivity.class);
-            intent.putExtra(Constants.RECIPE_ID, receipeId);
-            intent.putExtra(Constants.STEP_INDEX, clickedItem);
-            finish();
-            startActivity(intent);
+            fragment.mAdapter.swapCursor(bak.getSteps(),clickedItem);
+            fragment.setStepIndex(clickedItem);
+            Log.i(TAG,"Log number 54369");
+            stepIndex = clickedItem;
+            fragmentStep = new StepFragment();
+            fragmentStep.setDescription(bak.getSteps().get(clickedItem).getDescription());
+            FragmentTransaction fm = fragManager.beginTransaction();
+            fm.replace(R.id.step_container, fragmentStep);
+            fm.commitAllowingStateLoss();
+
+
+            fragmentVideo = new VideoRecipeFragment();
+            fragmentVideo.setUri(bak.getSteps().get(clickedItem).getVideoURL());
+            fragManager.beginTransaction().
+                    replace(R.id.detail_container,fragmentVideo ).commitAllowingStateLoss();
         }
     }
 
@@ -82,7 +95,7 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
     @Override
     public void onResponse(Call<List<Baking>> call, Response<List<Baking>> response) {
         if(response.isSuccessful()) {
-            Baking bak = getBakingReceipt(response.body());
+            bak = getBakingReceipt(response.body());
             if(bak != null){
                 setTitle(bak.getName());
                 if(findViewById(R.id.master_container) != null && isFirstLoad){

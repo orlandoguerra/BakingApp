@@ -9,7 +9,9 @@
         android:layout_height="54dp"
         android:text="@string/app_ingredients"
         style="@style/borderOptionStyle"
-        android:drawableRight="@drawable/ic_ingredient"/>
+        android:drawableRight="@drawable/ic_ingredient"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_recipe"

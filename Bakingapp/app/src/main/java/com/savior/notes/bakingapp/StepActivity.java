@@ -1,7 +1,7 @@
 package com.savior.notes.bakingapp;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.savior.notes.bakingapp.model.Baking;
 import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.util.NetworkUtil;
@@ -18,11 +16,11 @@ import com.savior.notes.bakingapp.util.NoConnectivityException;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StepActivity extends AppCompatActivity  implements Callback<List<Baking>> {
 
@@ -35,16 +33,19 @@ public class StepActivity extends AppCompatActivity  implements Callback<List<Ba
     private VideoRecipeFragment fragmentVideo;
     private StepFragment fragmentStep;
     private boolean isFirstLoad;
+    @BindView(R.id.pagination_before)ImageView  pagBefore;
+    @BindView(R.id.pagination_after) ImageView  pagAfter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
+        ButterKnife.bind(this);
 
         Call<List<Baking>> call = NetworkUtil.getBakingCall(this);
         call.enqueue(this);
 
-        fragManager = getSupportFragmentManager();
+        fragManager = getFragmentManager();
 
         if (savedInstanceState == null) {
             Intent sendIntent = getIntent();
@@ -88,8 +89,6 @@ public class StepActivity extends AppCompatActivity  implements Callback<List<Ba
 
     private void setPaginationStatus(Baking bak){
         if(findViewById(R.id.pagination_before) != null){
-            ImageView  pagBefore = (ImageView) findViewById(R.id.pagination_before);
-            ImageView  pagAfter = (ImageView) findViewById(R.id.pagination_after);
             pagBefore.setVisibility(stepIndex == 0 ? View.INVISIBLE : View.VISIBLE);
             pagAfter.setVisibility(stepIndex < (bak.getSteps().size()-1)?View.VISIBLE:View.GONE);
         }
