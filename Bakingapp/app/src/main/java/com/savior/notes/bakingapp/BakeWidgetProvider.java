@@ -3,6 +3,7 @@ package com.savior.notes.bakingapp;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.util.NetworkUtil;
 import com.savior.notes.bakingapp.util.NoConnectivityException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -30,57 +32,45 @@ public class BakeWidgetProvider extends AppWidgetProvider  {
 
     private static final String TAG = BakeWidgetProvider.class.getSimpleName();
 
-    static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager, final int appWidgetId) {
-        Call<List<Baking>> call = NetworkUtil.getBakingCall(context);
-        Log.i(TAG, "Step 1");
-        call.enqueue(new Callback<List<Baking>>() {
-            public void onResponse(Call<List<Baking>> call, Response<List<Baking>> response) {
-                Log.i(TAG, "Step 2");
-                if (response.isSuccessful()) {
-                    Log.i(TAG, "Step 3");
-                    Baking bak = getBakingReceipt(response.body());
-                    RemoteViews views = getSingleRemoteView(context,bak);
-                    appWidgetManager.updateAppWidget(appWidgetId, views);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Baking>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+    static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager, final int appWidgetId, ArrayList<String> ingred) {
+        RemoteViews views;
+        views = getMultipleRemoteView(context,ingred);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
 
-    private static Baking getBakingReceipt(List<Baking> bakings){
-        for(Baking bak:bakings){
-            return  bak;
-        }
-        return null;
-    }
+    public static RemoteViews getMultipleRemoteView(Context context, ArrayList<String> ingred){
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bake_grid_widget_provider);
+        Intent intent = new Intent(context, BakeGridWidgetService.class);
+        intent.putStringArrayListExtra(Constants.INGRED_INFO, ingred);
+        views.setRemoteAdapter(R.id.widget_grid_view, intent);
+        Intent appIntent = new Intent(context, IngredientsActivity.class);
 
-    public static RemoteViews getSingleRemoteView(Context context,Baking bak) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bake_widget_provider);
-        Intent intent =  new Intent(context,RecipeActivity.class);
-        intent.putExtra(Constants.RECIPE_ID, bak.getId());
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
-        views.setTextViewText(R.id.widget_id, bak.getName());
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,appIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.widget_grid_view, pendingIntent);
+        views.setEmptyView(R.id.widget_grid_view, R.id.empty_view);
         return views;
     }
-/*
-    public static RemoteViews getSingleRemoteView(Context context) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.bake_widget_provider);
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.widget_id, pendingIntent);
-        return views;
-    }
-*/
+
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+                                          int appWidgetId,  Bundle newOptions){
+        BakeService.startActionUpdateWidgets(context);
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+    }
+
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds){
+        BakeService.startActionUpdateWidgets(context);
+    }
+
+    public static void onUpdateStatic(Context context, ArrayList<String> ingred){
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int [] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, BakeWidgetProvider.class ));
+
+
+        for( int appWidgetId: appWidgetIds){
+            updateAppWidget(context, appWidgetManager,appWidgetId, ingred);
         }
     }
 

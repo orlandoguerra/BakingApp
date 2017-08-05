@@ -20,12 +20,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RecipeActivity extends AppCompatActivity  implements Callback<List<Baking>> {
+public class RecipeActivity extends AppCompatActivity  implements Callback<List<Baking>>, ListItemClickListener{
 
     private static final String SAVED_RECIPE_ID = "SAVED_RECIPE_ID";
     private static final String SAVED_STEP_INDEX = "SAVED_STEP_INDEX";
     private static final String TAG = RecipeActivity.class.getSimpleName();
-    private FragmentManager fragManager;
     private int receipeId;
     private Integer stepIndex;
     private VideoRecipeFragment fragmentVideo;
@@ -33,6 +32,7 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
     private StepFragment fragmentStep;
     private boolean isFirstLoad;
     private Baking bak;
+    private FragmentManager fragManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,49 +48,50 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
         }else{
             receipeId = savedInstanceState.getInt(SAVED_RECIPE_ID);
             stepIndex = savedInstanceState.getInt(SAVED_STEP_INDEX);
-            //receipeId = sendIntent.getIntExtra(Constants.RECIPE_ID,0);
-            //stepIndex = sendIntent.getIntExtra(Constants.STEP_INDEX,0);
-            //isFirstLoad = true;
         }
-
+        fragManager = getFragmentManager();
         Call<List<Baking>> call = NetworkUtil.getBakingCall(this);
         call.enqueue(this);
 
-        fragManager = getFragmentManager();
 
     }
 
-    class ClickActivity implements ListItemClickListener{
-        @Override
-        public void onListItemClick(int clickedItem) {
-            fragment.mAdapter.swapCursor(bak.getSteps(),clickedItem);
-            fragment.setStepIndex(clickedItem);
-            Log.i(TAG,"Log number 54369");
+
+
+
+    @Override
+    public void onListItemClick(int clickedItem) {
+
+        if(findViewById(R.id.detail_container)== null){
+            Intent intent =  new Intent(RecipeActivity.this,StepActivity.class);
+            intent.putExtra(Constants.RECIPE_ID, receipeId);
+            intent.putExtra(Constants.STEP_INDEX, clickedItem);
+            startActivity(intent);
+        }else{
+            FragmentTransaction fm = fragManager.beginTransaction();
+            Log.i(TAG,"Log number 54380");
             stepIndex = clickedItem;
+
+            fragment = new MasterRecipeFragment();
+            fragment.setStepIndex(stepIndex);
+            fragment.setReceipeId(bak.getId());
+            fragment.setClickAction(this);
+            fragManager.beginTransaction().replace(R.id.master_container, fragment).commit();
+
             fragmentStep = new StepFragment();
             fragmentStep.setDescription(bak.getSteps().get(clickedItem).getDescription());
-            FragmentTransaction fm = fragManager.beginTransaction();
-            fm.replace(R.id.step_container, fragmentStep);
-            fm.commitAllowingStateLoss();
 
+            fm.replace(R.id.step_container, fragmentStep);
+            fm.commit();
 
             fragmentVideo = new VideoRecipeFragment();
             fragmentVideo.setUri(bak.getSteps().get(clickedItem).getVideoURL());
             fragManager.beginTransaction().
                     replace(R.id.detail_container,fragmentVideo ).commitAllowingStateLoss();
         }
+
     }
 
-
-    class ClickActivitySteps implements ListItemClickListener{
-        @Override
-        public void onListItemClick(int clickedItem) {
-            Intent intent =  new Intent(RecipeActivity.this,StepActivity.class);
-            intent.putExtra(Constants.RECIPE_ID, receipeId);
-            intent.putExtra(Constants.STEP_INDEX, clickedItem);
-            startActivity(intent);
-        }
-    }
 
     @Override
     public void onResponse(Call<List<Baking>> call, Response<List<Baking>> response) {
@@ -124,10 +125,11 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
 
     private void loadMaster(Baking bak, int stepIndex){
         if(bak.getSteps().get(stepIndex)==null)return;
+
         fragment = new MasterRecipeFragment();
         fragment.setStepIndex(stepIndex);
-        fragment.setReceipe(bak);
-        fragment.setClickAction(findViewById(R.id.detail_container)== null?new ClickActivitySteps(): new ClickActivity());
+        fragment.setReceipeId(bak.getId());
+        fragment.setClickAction(this);
         fragManager.beginTransaction().add(R.id.master_container,fragment ).commit();
     }
 

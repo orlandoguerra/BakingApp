@@ -33,6 +33,7 @@ public class StepActivity extends AppCompatActivity  implements Callback<List<Ba
     private VideoRecipeFragment fragmentVideo;
     private StepFragment fragmentStep;
     private boolean isFirstLoad;
+
     @BindView(R.id.pagination_before)ImageView  pagBefore;
     @BindView(R.id.pagination_after) ImageView  pagAfter;
 

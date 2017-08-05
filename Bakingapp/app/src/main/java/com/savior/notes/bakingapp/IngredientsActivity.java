@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ public class IngredientsActivity extends AppCompatActivity implements Callback<L
         setTitle(getString(R.string.app_ingredients));
         Intent sendIntent = getIntent();
         receipeId = sendIntent.getIntExtra(Constants.RECIPE_ID,0);
+        Log.i("Received",receipeId+"");
         ButterKnife.bind(this);
         mLoadingIndicator.setVisibility(View.VISIBLE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

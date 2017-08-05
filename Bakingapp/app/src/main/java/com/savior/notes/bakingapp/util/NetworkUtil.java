@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.savior.notes.bakingapp.BakingAPI;
 import com.savior.notes.bakingapp.model.Baking;
 
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -46,5 +47,21 @@ public class NetworkUtil {
         Call<List<Baking>> call = bakAPI.loadChanges();
         return call;
     }
+
+    /**
+     * Use for Sync task
+     * @param context
+     * @return
+     */
+    public static List<Baking>  getBakings(Context context){
+        Call<List<Baking>> call =  NetworkUtil.getBakingCall(context);
+        try {
+            return call.execute().body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }
