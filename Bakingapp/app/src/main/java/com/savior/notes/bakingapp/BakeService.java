@@ -5,10 +5,13 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.savior.notes.bakingapp.model.Baking;
 import com.savior.notes.bakingapp.model.Ingredient;
+import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.util.NetworkUtil;
 
 import java.util.ArrayList;
@@ -51,10 +54,14 @@ public class BakeService extends IntentService implements Callback<List<Baking>>
     public void onResponse(Call<List<Baking>> call, Response<List<Baking>> response) {
         if(response.isSuccessful()) {
             List<Baking> bakings = response.body();
-            if(bakings == null || bakings.get(0) == null) return;
-            List<Ingredient> ingredients = bakings.get(0).getIngredients();
+
+            SharedPreferences sPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            int selected = sPreferences.getInt(Constants.LAST_SELECTED,0);
+
+            if(bakings == null || bakings.get(selected) == null) return;
+            List<Ingredient> ingredients = bakings.get(selected).getIngredients();
             ArrayList<String> ingred = new ArrayList<String>();
-            ingred.add(bakings.get(0).getName());
+            ingred.add(bakings.get(selected).getName());
             for(Ingredient ing:ingredients){
                 ingred.add(ing.getIngredient());
             }

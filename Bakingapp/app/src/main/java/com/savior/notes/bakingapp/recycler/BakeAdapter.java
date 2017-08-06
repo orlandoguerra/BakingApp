@@ -2,6 +2,7 @@ package com.savior.notes.bakingapp.recycler;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class BakeAdapter extends RecyclerView.Adapter<BakeHolder> {
         holder.mNameTextView.setText(bak.getName());
         holder.itemView.setTag(bak.getId());
 
-        if(bak.getImage() == null || "".equals(bak.getImage())){
+        if(TextUtils.isEmpty(bak.getImage())){
             holder.mImageDescription.setImageResource(R.drawable.ic_servings);
         }else{
             Picasso.with(this.context).load(bak.getImage())

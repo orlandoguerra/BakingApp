@@ -1,6 +1,8 @@
 package com.savior.notes.bakingapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -79,6 +81,12 @@ public class MainActivity extends AppCompatActivity  implements Callback<List<Ba
             if(bak == null) return;
             Intent intent =  new Intent(MainActivity.this,RecipeActivity.class);
             intent.putExtra(Constants.RECIPE_ID, bak.getId());
+
+            SharedPreferences sPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            SharedPreferences.Editor editor = sPreferences.edit();
+            editor.putInt(Constants.LAST_SELECTED,clickedItem);
+            editor.apply();
+
             startActivity(intent);
         }
     }

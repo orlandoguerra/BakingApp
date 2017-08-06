@@ -2,6 +2,7 @@ package com.savior.notes.bakingapp;
 
 import android.content.Intent;
 import android.app.FragmentManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +35,9 @@ public class StepActivity extends AppCompatActivity  implements Callback<List<Ba
     private StepFragment fragmentStep;
     private boolean isFirstLoad;
 
+    @Nullable
     @BindView(R.id.pagination_before)ImageView  pagBefore;
+    @Nullable
     @BindView(R.id.pagination_after) ImageView  pagAfter;
 
     @Override

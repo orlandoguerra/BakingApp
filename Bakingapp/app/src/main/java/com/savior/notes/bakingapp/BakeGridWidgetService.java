@@ -87,8 +87,7 @@ public class BakeGridWidgetService extends RemoteViewsService{
 
         @Override
         public int getCount() {
-            if(ingredients == null) return 0;
-            return ingredients.size();
+            return ingredients == null?0:ingredients.size();
         }
 
 
