@@ -4,6 +4,10 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +17,7 @@ import com.savior.notes.bakingapp.model.Baking;
 import com.savior.notes.bakingapp.recycler.Constants;
 import com.savior.notes.bakingapp.util.NetworkUtil;
 import com.savior.notes.bakingapp.util.NoConnectivityException;
+import com.savior.notes.bakingapp.util.SimpleIdlingResource;
 
 import java.util.List;
 import retrofit2.Call;
@@ -33,11 +38,24 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
     private boolean isFirstLoad;
     private Baking bak;
     private FragmentManager fragManager;
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
+        getIdlingResource();
 
         Intent sendIntent = getIntent();
         if (savedInstanceState == null) {
@@ -112,6 +130,7 @@ public class RecipeActivity extends AppCompatActivity  implements Callback<List<
         } else {
             Toast.makeText(this, getString(R.string.error_results), Toast.LENGTH_SHORT).show();
         }
+        mIdlingResource.setIdleState(true);
     }
 
     private Baking getBakingReceipt(List<Baking> bakings){
